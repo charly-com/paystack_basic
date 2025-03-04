@@ -34,38 +34,35 @@ app.use(express.json());
 
 // Route to create a Paystack transaction
 app.post('/paystack/transaction', async (req, res) => {
-  const { email, amount } = req.body;
-
-  // Ensure the amount is in kobo (100 kobo = 1 Naira)
-  const amountInKobo = amount * 100;
-
-  try {
-    const response = await axios.post(
-      'https://api.paystack.co/transaction/initialize',
-      { email, amount: amountInKobo },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
+    const { email, amount } = req.body;
+    const amountInKobo = amount * 100;
+  
+    try {
+      const response = await axios.post(
+        'https://api.paystack.co/transaction/initialize',
+        { email, amount: amountInKobo },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      if (response.data.status === true) {
+        return res.json({
+          authorization_url: response.data.data.authorization_url,
+          reference: response.data.data.reference,
+        });
+      } else {
+        console.error('Paystack API response:', response.data);
+        return res.status(400).json({ message: 'Transaction initialization failed', details: response.data });
       }
-    );
-
-    // Check if Paystack returned a success status (true)
-    if (response.data.status === true) {
-      return res.json({
-        authorization_url: response.data.data.authorization_url,
-        reference: response.data.data.reference,
-      });
-    } else {
-      console.error('Paystack API response:', response.data);
-      return res.status(400).json({ message: 'Transaction initialization failed', details: response.data });
+    } catch (error) {
+      console.error('Paystack transaction error:', error.response?.data || error.message);
+      return res.status(500).json({ message: 'An error occurred', details: error.response?.data });
     }
-  } catch (error) {
-    console.error('Paystack transaction error:', error.response?.data || error.message);
-    return res.status(500).json({ message: 'An error occurred', details: error.response?.data });
-  }
-});
+  });
 
 // Route to verify the transaction after the user completes payment
 app.post('/paystack/verify', async (req, res) => {
