@@ -40,14 +40,11 @@ app.post('/paystack/transaction', async (req, res) => {
   // Ensure the amount is in kobo (100 kobo = 1 Naira)
   const amountInKobo = amount * 100;
 
-  try {
-    // Call Paystack API to initialize the transaction
+  // Inside the /paystack/transaction route
+try {
     const response = await axios.post(
       'https://api.paystack.co/transaction/initialize',
-      {
-        email,
-        amount: amountInKobo,
-      },
+      { email, amount: amountInKobo },
       {
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -55,20 +52,49 @@ app.post('/paystack/transaction', async (req, res) => {
         },
       }
     );
-
-    // If successful, return the authorization URL and reference
+  
     if (response.data.status === 'success') {
       return res.json({
         authorization_url: response.data.data.authorization_url,
         reference: response.data.data.reference,
       });
     } else {
-      return res.status(400).json({ message: 'Transaction initialization failed' });
+      console.error('Paystack API response:', response.data); // Log the full response
+      return res.status(400).json({ message: 'Transaction initialization failed', details: response.data });
     }
   } catch (error) {
-    console.error('Paystack transaction error:', error);
-    return res.status(500).json({ message: 'An error occurred' });
+    console.error('Paystack transaction error:', error.response?.data || error.message);
+    return res.status(500).json({ message: 'An error occurred', details: error.response?.data });
   }
+//   try {
+//     // Call Paystack API to initialize the transaction
+//     const response = await axios.post(
+//       'https://api.paystack.co/transaction/initialize',
+//       {
+//         email,
+//         amount: amountInKobo,
+//       },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
+
+//     // If successful, return the authorization URL and reference
+//     if (response.data.status === 'success') {
+//       return res.json({
+//         authorization_url: response.data.data.authorization_url,
+//         reference: response.data.data.reference,
+//       });
+//     } else {
+//       return res.status(400).json({ message: 'Transaction initialization failed' });
+//     }
+//   } catch (error) {
+//     console.error('Paystack transaction error:', error);
+//     return res.status(500).json({ message: 'An error occurred' });
+//   }
 });
 
 // Route to verify the transaction after the user completes payment
