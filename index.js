@@ -34,13 +34,13 @@ app.use(express.json());
 
 // Route to create a Paystack transaction
 app.post('/paystack/transaction', async (req, res) => {
-    const { email, amount } = req.body;
+    const { email, amount, reference } = req.body;
     const amountInKobo = amount * 100;
   
     try {
       const response = await axios.post(
         'https://api.paystack.co/transaction/initialize',
-        { email, amount: amountInKobo },
+        { email, amount: amountInKobo, reference }, 
         {
           headers: {
             Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -50,6 +50,7 @@ app.post('/paystack/transaction', async (req, res) => {
       );
   
       if (response.data.status === true) {
+        console.log("Generated reference:", response.data.data.reference);
         return res.json({
           authorization_url: response.data.data.authorization_url,
           reference: response.data.data.reference,
