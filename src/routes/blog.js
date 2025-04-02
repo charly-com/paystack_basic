@@ -48,7 +48,7 @@ router.post('/upload', upload.single('image'), async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const { status } = req.query; 
-    const filter = status ? { status } : {}; // Apply filter if status is provided
+    const filter = status ? { status } : {}; 
     const blogs = await Blog.find(filter).sort({ createdAt: -1 });
     res.json(blogs);
   } catch (error) {
@@ -77,9 +77,9 @@ router.put('/:id', upload.single('image'), async (req, res) => {
   try {
     const updateData = { title, content, author, updatedAt: Date.now() };
     if (imageUrl) updateData.imageUrl = imageUrl;
-    if (status) updateData.status = status; // Update status if provided
-    if (category !== undefined) updateData.category = category; // Allow empty string
-    if (tags) updateData.tags = JSON.parse(tags); // Parse tags if provided
+    if (status) updateData.status = status; 
+    if (category !== undefined) updateData.category = category;
+    if (tags) updateData.tags = JSON.parse(tags);
 
     const blog = await Blog.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!blog) return res.status(404).json({ message: 'Blog post not found' });

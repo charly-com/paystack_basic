@@ -2,26 +2,26 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  referralCode: { type: String, default: '' },
+  firstName: { type: String },
+  lastName: { type: String },
+  referralCode: { type: String, default: "" },
   isSubscribed: { type: Boolean, default: false },
-  currentView: { type: String, default: 'home' },
+  currentView: { type: String, default: "home" },
   selectedSubject: { type: String, default: null },
   selectedYear: { type: String, default: null },
-  randomSubject: { type: String, default: '' },
-  randomYear: { type: String, default: '' },
+  randomSubject: { type: String, default: "" },
+  randomYear: { type: String, default: "" },
   randomQuestion: { type: Object, default: null },
-  userAnswer: { type: String, default: '' },
+  userAnswer: { type: String, default: "" },
   result: { type: String, default: null },
   pastQuestionsState: {
     questions: { type: Array, default: [] },
     userAnswers: { type: Object, default: {} },
-    results: { type: Object, default: null },
+    results: { type: String, default: null },
   },
   randomAttempts: { type: Number, default: 0 },
   lastResetDate: { type: Date, default: null },
-  createdAt: { type: Date, default: Date.now },
+  score: { type: Number, default: 0 }, // Assumed for leaderboard
   updatedAt: { type: Date, default: Date.now },
 });
 
