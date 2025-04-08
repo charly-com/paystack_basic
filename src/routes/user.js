@@ -111,17 +111,38 @@ router.put('/:email/subscription', async (req, res) => {
   }
 });
 
-router.get('/leaderboard', async (req, res) => {
+router.get('/leaderboards', async (req, res) => {
   try {
-    const topUsers = await User.find()
-      .sort({ score: -1 }) // Sort by score descending
-      .limit(10) // Top 10 users
-      .select('firstName lastName score'); // Return relevant fields
-    res.json(topUsers);
+    const mockLeaderboard = [
+      { firstName: "Segun", lastName: "Adebayo", score: 950 },
+      { firstName: "Jane", lastName: "Okoro", score: 920 },
+      { firstName: "Alex", lastName: "Johnson", score: 880 },
+      { firstName: "Emily", lastName: "Obozele", score: 850 },
+      { firstName: "Michael", lastName: "Davis", score: 820 },
+      { firstName: "Sarah", lastName: "Wilson", score: 790 },
+      { firstName: "David", lastName: "Taylor", score: 760 },
+      { firstName: "Laura", lastName: "Martinez", score: 730 },
+      { firstName: "Chris", lastName: "Anderson", score: 700 },
+      { firstName: "Kelly", lastName: "Thomas", score: 680 },
+    ];
+    console.log('Returning mock leaderboard:', mockLeaderboard);
+    return res.json(mockLeaderboard);
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
     res.status(500).json({ message: 'Failed to fetch leaderboard' });
   }
 });
+// router.get('/leaderboard', async (req, res) => {
+//   try {
+//     const topUsers = await User.find()
+//       .sort({ score: -1 }) // Sort by score descending
+//       .limit(10) // Top 10 users
+//       .select('firstName lastName score'); // Return relevant fields
+//     res.json(topUsers);
+//   } catch (error) {
+//     console.error('Error fetching leaderboard:', error);
+//     res.status(500).json({ message: 'Failed to fetch leaderboard' });
+//   }
+// });
 
 module.exports = router;
